@@ -6,7 +6,7 @@
 library(lme4)
 library(car)
 #working directory: 
-setwd("~/GitHub/urbantreeregen")
+setwd("~/git/urbantreeregen")
 ##FIGURES
 ##First, seed trap figure, comparing urban forests to old growth forests at mt rainier
 seeds<-read.csv("data/LPMoraSeedTrap.csv", header=T)
@@ -57,6 +57,9 @@ thpldat<-data[data$species=="THPL",]
 seedadddata<-data[data$numseeds>0,]
 controldata<-data[data$numseeds=="0",]
 tapply(controldata$numgerm,list(controldata$year,controldata$species),sum,na.rm = T)
+tapply(controldata$numgerm,list(controldata$block,controldata$plot,controldata$year),sum,na.rm = T)
+tapply(seedadddata$numgerm,list(seedadddata$block,seedadddata$plot,seedadddata$year),sum,na.rm = T)
+
 #try with data from both years, with year as a random effect
 #try with all data- seeds added and not added so that one full model can be used
 #Fit Poisson model for total germination (not surviving germinants at the end of the season)
@@ -313,41 +316,43 @@ setshesurvgermcontrolyear<-sdtshesurvgermcontrolyear/sqrt(ntshesurvgermcontrolye
 quartz(height=7,width=6)
 par(mfcol=c(3,1),mai=c(.6,.6,.1,.1), omi=c(.7,.1,.2,.2))
 X=c(1,2,3,4)
+X2=X+.1
+X3=X-.1
 #plot control (no seeds added) in white
-plot(meanabgrgermcontrol~X,ylab="",xlab="",xlim=c(.5,4.5),col.axis="white",ylim=c(-.1,10),type="p",bty="l",pch=21,cex=1.8,las=1,bg=c("white"), cex.main=1.3)
+plot(meanabgrgermcontrol~X3,ylab="",xlab="",xlim=c(.5,4.5),col.axis="white",ylim=c(-.1,10),type="p",bty="l",pch=21,cex=1.8,las=1,bg=c("white"), cex.main=1.3)
 ##add seeds added plots in gray
-X2=X+.2
+
 #error bars
 for (i in 1:8){
-  arrows(X[i],meanabgrgermcontrol[i]-seabgrgermcontrol[i],X[i],meanabgrgermcontrol[i]+seabgrgermcontrol[i],length=.05,angle=90,code=0)}
+  arrows(X3[i],meanabgrgermcontrol[i]-seabgrgermcontrol[i],X3[i],meanabgrgermcontrol[i]+seabgrgermcontrol[i],length=.05,angle=90,code=0)}
 for (i in 1:8){
   arrows(X2[i],meanabgrgerm[i]-seabgrgerm[i],X2[i],meanabgrgerm[i]+seabgrgerm[i],length=.05,angle=90,code=0)}
-points(meanabgrgermcontrol~X,bg="white",type="p",pch=21,cex=1.8)
+points(meanabgrgermcontrol~X3,bg="white",type="p",pch=21,cex=1.8)
 points(meanabgrgerm~X2,bg="black",type="p",pch=21,cex=1.8)
 mtext("Abies grandis",side=3,line=.8, adj=.1, font=3)
 mtext("a)",side=3,line=.8, adj=-.05)
 axis(2,at=c(0,2,4,6,8,10),las=1, cex.axis=1.3)
-legend(.4,11, bty="n",legend=c("Seeds added", "No seeds added"), pch=21,pt.bg=c("black","white"))
+legend(.4,11, bty="n",legend=c("Seeds added", "No seeds added"), pch=21,pt.bg=c("black","white"),pt.cex=1.3)
 
 #THPL
-plot(meanthplgermcontrol~X,ylab="",xlab="",xlim=c(.5,4.5),col.axis="white",ylim=c(-.006,.6),type="p",bty="l",pch=21,cex=1.8,las=1,bg="white", cex.main=1.3)
+plot(meanthplgermcontrol~X3,ylab="",xlab="",xlim=c(.5,4.5),col.axis="white",ylim=c(-.006,.6),type="p",bty="l",pch=21,cex=1.8,las=1,bg="white", cex.main=1.3)
 for (i in 1:8){
-  arrows(X[i],meanthplgermcontrol[i]-sethplgermcontrol[i],X[i],meanthplgermcontrol[i]+sethplgermcontrol[i],length=.05,angle=90,code=0)}
+  arrows(X3[i],meanthplgermcontrol[i]-sethplgermcontrol[i],X3[i],meanthplgermcontrol[i]+sethplgermcontrol[i],length=.05,angle=90,code=0)}
 for (i in 1:8){
   arrows(X2[i],meanthplgerm[i]-sethplgerm[i],X2[i],meanthplgerm[i]+sethplgerm[i],length=.05,angle=90,code=0)}
-points(meanthplgermcontrol~X,bg="white",type="p",pch=21,cex=1.8)
+points(meanthplgermcontrol~X3,bg="white",type="p",pch=21,cex=1.8)
 points(meanthplgerm~X2,bg="black",type="p",pch=21,cex=1.8)
 axis(2,at=c(0,.1,.2,.3,.4,.5,.6,.7,.8,.9,1),las=1, cex.axis=1.3)
 mtext("Thuja plicata",side=3,line=.8, adj=.1, font=3)
 mtext("b)",side=3,line=.8, adj=-.05)
 mtext("Mean number of total germinants", side=2, line=3,cex=1.2)
 #TSHE
-plot(meantshegermcontrol~X,ylab="",xlab="",xlim=c(.5,4.5),col.axis="white",ylim=c(-.02,2.5),type="p",bty="l",pch=21,cex=1.8,las=1,bg="white", cex.main=1.3)
+plot(meantshegermcontrol~X3,ylab="",xlab="",xlim=c(.5,4.5),col.axis="white",ylim=c(-.02,2.5),type="p",bty="l",pch=21,cex=1.8,las=1,bg="white", cex.main=1.3)
 for (i in 1:8){
-  arrows(X[i],meantshegermcontrol[i]-setshegermcontrol[i],X[i],meantshegermcontrol[i]+setshegermcontrol[i],length=.05,angle=90,code=0)}
+  arrows(X3[i],meantshegermcontrol[i]-setshegermcontrol[i],X3[i],meantshegermcontrol[i]+setshegermcontrol[i],length=.05,angle=90,code=0)}
 for (i in 1:8){
   arrows(X2[i],meantshegerm[i]-setshegerm[i],X2[i],meantshegerm[i]+setshegerm[i],length=.05,angle=90,code=0)}
-points(meantshegermcontrol~X,bg="white",type="p",pch=21,cex=1.8)
+points(meantshegermcontrol~X3,bg="white",type="p",pch=21,cex=1.8)
 points(meantshegerm~X2,bg="black",type="p",pch=21,cex=1.8)
 axis(2,at=c(0,.5,1,1.5,2,2.5),las=1, cex.axis=1.3)
 mtext("Tsuga heterophylla",side=3,line=.8, adj=.1, font=3)
@@ -360,57 +365,60 @@ par(mfcol=c(3,1),mai=c(.6,.6,.1,.1), omi=c(.7,.1,.2,.2))
 X=c(1,2,3,4)
 #pl
 #plot control (no seeds added) in white
-plot(meanabgrsurvgermcontrol~X,ylab="",xlab="",xlim=c(.5,4.5),col.axis="white",ylim=c(-.1,10),type="p",bty="l",pch=21,cex=1.8,las=1,bg=c("white"), cex.main=1.3)
+plot(meanabgrsurvgermcontrol~X3,ylab="",xlab="",xlim=c(.5,4.5),col.axis="white",ylim=c(-.1,4),type="p",bty="l",pch=21,cex=1.8,las=1,bg=c("white"), cex.main=1.3)
 ##add seeds added plots in gray
 #error bars
 for (i in 1:8){
-  arrows(X[i],meanabgrsurvgermcontrol[i]-seabgrsurvgermcontrol[i],X[i],meanabgrsurvgermcontrol[i]+seabgrsurvgermcontrol[i],length=.05,angle=90,code=0)}
+  arrows(X3[i],meanabgrsurvgermcontrol[i]-seabgrsurvgermcontrol[i],X3[i],meanabgrsurvgermcontrol[i]+seabgrsurvgermcontrol[i],length=.05,angle=90,code=0)}
 for (i in 1:8){
   arrows(X2[i],meanabgrsurvgerm[i]-seabgrsurvgerm[i],X2[i],meanabgrsurvgerm[i]+seabgrsurvgerm[i],length=.05,angle=90,code=0)}
-points(meanabgrsurvgermcontrol~X,bg="white",type="p",pch=21,cex=1.8)
+points(meanabgrsurvgermcontrol~X3,bg="white",type="p",pch=21,cex=1.8)
 points(meanabgrsurvgerm~X2,bg="black",type="p",pch=21,cex=1.8)
 mtext("Abies grandis",side=3,line=.8, adj=.1, font=3)
 mtext("a)",side=3,line=.8, adj=-.05)
-axis(2,at=c(0,2,4,6,8,10),las=1, cex.axis=1.3)
-legend(.4,11, bty="n",legend=c("Seeds added", "No seeds added"), pch=21,pt.bg=c("black","white"))
+axis(2,at=c(0,1,2,3,4),las=1, cex.axis=1.3)
+legend(.4,4.3, bty="n",legend=c("Seeds added", "No seeds added"), pch=21,pt.bg=c("black","white"),pt.cex=1.3)
 
 #THPL
-plot(meanthplsurvgermcontrol~X,ylab="",xlab="",xlim=c(.5,4.5),col.axis="white",ylim=c(-.006,.6),type="p",bty="l",pch=21,cex=1.8,las=1,bg="white", cex.main=1.3)
+plot(meanthplsurvgermcontrol~X3,ylab="",xlab="",xlim=c(.5,4.5),col.axis="white",ylim=c(-.006,.3),type="p",bty="l",pch=21,cex=1.8,las=1,bg="white", cex.main=1.3)
 for (i in 1:8){
-  arrows(X[i],meanthplsurvgermcontrol[i]-sethplsurvgermcontrol[i],X[i],meanthplsurvgermcontrol[i]+sethplsurvgermcontrol[i],length=.05,angle=90,code=0)}
+  arrows(X3[i],meanthplsurvgermcontrol[i]-sethplsurvgermcontrol[i],X3[i],meanthplsurvgermcontrol[i]+sethplsurvgermcontrol[i],length=.05,angle=90,code=0)}
 for (i in 1:8){
   arrows(X2[i],meanthplsurvgerm[i]-sethplsurvgerm[i],X2[i],meanthplsurvgerm[i]+sethplsurvgerm[i],length=.05,angle=90,code=0)}
-points(meanthplsurvgermcontrol~X,bg="white",type="p",pch=21,cex=1.8)
+points(meanthplsurvgermcontrol~X3,bg="white",type="p",pch=21,cex=1.8)
 points(meanthplsurvgerm~X2,bg="black",type="p",pch=21,cex=1.8)
-axis(2,at=c(0,.1,.2,.3,.4,.5,.6,.7,.8,.9,1),las=1, cex.axis=1.3)
+axis(2,at=c(0,.1,.2,.3),las=1, cex.axis=1.3)
 mtext("Thuja plicata",side=3,line=.8, adj=.1, font=3)
 mtext("b)",side=3,line=.8, adj=-.05)
 mtext("Mean number of suviving germinants", side=2, line=3,cex=1.2)
 #TSHE
-plot(meantshesurvgermcontrol~X,ylab="",xlab="",xlim=c(.5,4.5),col.axis="white",ylim=c(-.02,2),type="p",bty="l",pch=21,cex=1.8,las=1,bg="white", cex.main=1.3)
+plot(meantshesurvgermcontrol~X3,ylab="",xlab="",xlim=c(.5,4.5),col.axis="white",ylim=c(-.02,1),type="p",bty="l",pch=21,cex=1.8,las=1,bg="white", cex.main=1.3)
 for (i in 1:8){
-  arrows(X[i],meantshesurvgermcontrol[i]-setshesurvgermcontrol[i],X[i],meantshesurvgermcontrol[i]+setshesurvgermcontrol[i],length=.05,angle=90,code=0)}
+  arrows(X3[i],meantshesurvgermcontrol[i]-setshesurvgermcontrol[i],X3[i],meantshesurvgermcontrol[i]+setshesurvgermcontrol[i],length=.05,angle=90,code=0)}
 for (i in 1:8){
   arrows(X2[i],meantshesurvgerm[i]-setshesurvgerm[i],X2[i],meantshesurvgerm[i]+setshesurvgerm[i],length=.05,angle=90,code=0)}
-points(meantshesurvgermcontrol~X,bg="white",type="p",pch=21,cex=1.8)
+points(meantshesurvgermcontrol~X3,bg="white",type="p",pch=21,cex=1.8)
 points(meantshesurvgerm~X2,bg="black",type="p",pch=21,cex=1.8)
-axis(2,at=c(0,.5,1,1.5,2,2.5),las=1, cex.axis=1.3)
+axis(2,at=c(0,.2,.4,.6,.8,1),las=1, cex.axis=1.3)
 mtext("Tsuga heterophylla",side=3,line=.8, adj=.1, font=3)
 mtext("c)",side=3,line=.8, adj=-.05)
 axis(1,at=c(1,2,3,4),labels=c("Hedera present","Hedera removed","Hedera present","Hedera removed"),tick = FALSE)
 axis(1,at=c(1,2,3,4),labels=c("wood absent","wood absent","wood added","wood added"),tick = FALSE, line=1)
 
 ######Transplant survival
-setwd("~/Dropbox/SeattleConiferRegen/Manuscript/Analyses_ForManuscript/Ailene")
 ##TSHE
-tshesurvgr=read.csv("TSHEtransplant.csv", header=T)
+tshesurvgr=read.csv("data/TSHEtransplant.csv", header=T)
 head(tshesurvgr)
 dim(tshesurvgr)
 unique(tshesurvgr$Status_2012Aug3)
 tshesurvgr$Wood=as.factor(tshesurvgr$Wood)
 tshesurvgr$Ivy=as.factor(tshesurvgr$Ivy)
 tshesurvgr$Block=as.factor(tshesurvgr$Block)
+tshesurvgr$Plot=as.factor(tshesurvgr$Plot)
 
+tapply(tshesurvgr$Status_2012Aug3,list(tshesurvgr$Wood,tshesurvgr$Ivy,tshesurvgr$Plot),sum,na.rm=T)
+tapply(tshesurvgr$Status_2012Aug3,list(tshesurvgr$Wood,tshesurvgr$Ivy,tshesurvgr$Plot),length)
+sum(tapply(tshesurvgr$Status_2012Aug3,list(tshesurvgr$Wood,tshesurvgr$Ivy,tshesurvgr$Plot),length), na.rm=T)
 ###survival glm at end of study
 survmod.tshe=glmer(Status_2012Aug3~Wood*Ivy + (1|Block), family=binomial,data=tshesurvgr)#get error message!
 summary(survmod.tshe)#positive effect of wood, negative effect of ivy, but weaker
@@ -423,7 +431,7 @@ himod.tshe=lmer(HI~as.factor(Wood)*as.factor(Ivy) + (1|Block),data=tshesurvgr)#g
 summary(himod.tshe)#positive effect of wood, negative effect of ivy
 Anova(himod.tshe)#both wood sig, ivy & interaction not signiciant 
 ##THPL
-thplsurvgr=read.csv("THPLtransplant.csv", header=T)
+thplsurvgr=read.csv("data/THPLtransplant.csv", header=T)
 head(thplsurvgr)
 dim(thplsurvgr)
 unique(thplsurvgr$Ivy)
@@ -431,6 +439,13 @@ thplsurvgr$HI=thplsurvgr$Ht_cm_2012Aug3-thplsurvgr$Ht_cm_2011May26
 thplsurvgr$Wood=as.factor(thplsurvgr$Wood)
 thplsurvgr$Ivy=as.factor(thplsurvgr$Ivy)
 thplsurvgr$Block=as.factor(thplsurvgr$Block)
+thplsurvgr$Plot=as.factor(thplsurvgr$Plot)
+
+tapply(thplsurvgr$Status_2012Aug3,list(thplsurvgr$Wood,thplsurvgr$Ivy,thplsurvgr$Block),sum,na.rm=T)
+
+tapply(thplsurvgr$Status_2012Aug3,list(thplsurvgr$Wood,thplsurvgr$Ivy,thplsurvgr$Block),length)
+sum(tapply(thplsurvgr$Status_2012Aug3,list(thplsurvgr$Wood,thplsurvgr$Ivy,thplsurvgr$Plot),length), na.rm=T)
+
 ###survival glm at end of study
 survmod.thpl=glmer(Status_2012Aug3~Wood*Ivy + (1|Block), family=binomial,data=thplsurvgr,control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e5)))#get error message! doesn't converge- i think because perfect survival with wood!
 summary(survmod.thpl)#positive effect of wood, negative effect of ivy, negative interaction
